@@ -1,1 +1,4 @@
-"# group-19-frontend" 
+# To Run
+
+npm i
+npm run dev
