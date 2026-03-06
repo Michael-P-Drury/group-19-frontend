@@ -38,17 +38,29 @@ export default function SignupPage() {
     };
 
     return (
-        <div>
-            <h1>Signup Page</h1>
+        <div className="d-flex align-items-center justify-content-center min-vh-100">
+            <div className="w-100" style={{ maxWidth: '380px' }}>
+                <h1>Sign Up</h1>
 
-            <form onSubmit={handleSignup}>
-                <input placeholder="username" onChange={(e) => setFormData({...formData, username: e.target.value})} />
-                <input type="password" placeholder="password" onChange={(e) => setFormData({...formData, password: e.target.value})} />
-                <input type="password" placeholder="confirm password" onChange={(e) => setFormData({...formData, confirm_password: e.target.value})} />
-                <button type="submit">Sign Up</button>
-            </form>
-            <p>To Login:</p>
-            <a href="/login"><button type="button">Login</button></a>
+                <form onSubmit={handleSignup}>
+                    <div className="mb-3">
+                        <input className="form-control" placeholder="username" onChange={(e) => setFormData({...formData, username: e.target.value})} />
+                    </div>
+
+                    <div className="mb-3">
+                        <input className="form-control" type="password" placeholder="password" onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                    </div>
+                    <div className="mb-3">
+                        <input className="form-control" type="password" placeholder="confirm password" onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                    </div>
+                    <button className="btn btn-primary w-100" type="submit">Sign Up</button>
+                </form>
+
+                <p className="text-right mt-3">To Login:</p>
+                <a href="/login">
+                    <button className="btn btn-secondary w-100" type="button">Login</button>
+                </a>
+            </div>
         </div>
     );
 
