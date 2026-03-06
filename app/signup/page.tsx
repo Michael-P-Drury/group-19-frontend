@@ -10,7 +10,7 @@ export default function SignupPage() {
     const [formData, setFormData] = useState({ username: '', password: '', confirm_password: ''});
 
     useEffect(() => {
-        const jwtToken = Cookies.get('jwt_token');
+        const jwtToken = Cookies.get('jwtToken');
         if (jwtToken) {
             router.push('/');
         }
