@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
+import '../globals.css';
 
 
 export default function LoginPage() {
@@ -43,16 +44,27 @@ export default function LoginPage() {
 
 
     return (
-        <div>
-            <h1>Login Page</h1>
+        <div className="d-flex align-items-center justify-content-center min-vh-100">
+            <div className="w-100" style={{ maxWidth: '380px' }}>
+                <h1>Login</h1>
 
-            <form onSubmit={handleLogin}>
-                <input placeholder="username" onChange={(e) => setFormData({...formData, username: e.target.value})} />
-                <input type="password" placeholder="password" onChange={(e) => setFormData({...formData, password: e.target.value})} />
-                <button type="submit">Sign In</button>
-            </form>
-            <p>Create account:</p>
-            <a href="/signup"><button type="button">Signup</button></a>
+                <form onSubmit={handleLogin}>
+                    <div className="mb-3">
+                        <input className="form-control" placeholder="username" onChange={(e) => setFormData({...formData, username: e.target.value})} />
+                    </div>
+
+                    <div className="mb-3">
+                        <input className="form-control" type="password" placeholder="password" onChange={(e) => setFormData({...formData, password: e.target.value})} />
+                    </div>
+
+                    <button className="btn btn-primary w-100" type="submit">Sign In</button>
+                </form>
+
+                <p className="text-right mt-3">Create an account:</p>
+                <a href="/signup">
+                    <button className="btn btn-secondary w-100" type="button">Sign Up</button>
+                </a>
+            </div>
         </div>
     );
 
