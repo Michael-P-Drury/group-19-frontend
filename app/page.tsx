@@ -44,6 +44,8 @@ export default function HomePage() {
 
             <p>Username: {userData.username}</p>
 
+            <button onClick={() => {Cookies.remove('jwtToken'); router.push('/login');}}> Logout </button>
+
         </div>
     );
 
