@@ -85,6 +85,29 @@ export default function HomePage() {
       window.URL.revokeObjectURL(url);
     }
 
+    async function handleMakeReccomendation(e: React.SyntheticEvent) {
+
+      const response = await fetch('http://127.0.0.1:8000/utils/make_suggestion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jwt_token: jwtToken }),
+      });
+
+      const data = await response.json();
+
+      location.reload()
+
+      if (data.status == 200) {
+        alert(data.reccomendation);
+      }
+      else {
+        alert(data.message);
+      }
+      
+    }
+
 
     useEffect(() => {
         
@@ -111,6 +134,8 @@ export default function HomePage() {
             </form>
 
             <button onClick= {handleDownloadTemplate}>Download Template</button>
+
+            <button onClick= {handleMakeReccomendation}>Make Reccomendation</button>
 
             <button onClick={() => {Cookies.remove('jwtToken'); router.push('/login');}}> Logout </button>
 
