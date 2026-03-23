@@ -69,6 +69,49 @@ export default function HomePage() {
     if (!jwtToken) {
       router.push("/login");
     }
+    async function handleDownloadTemplate(e: React.SyntheticEvent) {
+
+      const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
+        method: 'POST',
+        body: JSON.stringify({ jwt_token: jwtToken }),
+      });
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'finance_template.csv');
+      document.body.appendChild(link);
+      link.click();
+
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    }
+
+    async function handleMakeReccomendation(e: React.SyntheticEvent) {
+
+      const response = await fetch('http://127.0.0.1:8000/utils/make_suggestion', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ jwt_token: jwtToken }),
+      });
+
+      const data = await response.json();
+
+      location.reload()
+
+      if (data.status == 200) {
+        alert(data.reccomendation);
+      }
+      else {
+        alert(data.message);
+      }
+      
+    }
+
 
     getUserData();
   }, [router]);
@@ -97,6 +140,14 @@ export default function HomePage() {
       </form>
     </div>
   );
+            <button onClick= {handleDownloadTemplate}>Download Template</button>
+
+            <button onClick= {handleMakeReccomendation}>Make Reccomendation</button>
+
+            <button onClick={() => {Cookies.remove('jwtToken'); router.push('/login');}}> Logout </button>
+
+        </div>
+    );
 
   //return <Dashboard />;
 }
