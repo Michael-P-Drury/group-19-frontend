@@ -48,7 +48,7 @@ export default function HomePage() {
       formData.append('jwt_token', jwtToken);
       formData.append('file', file);
 
-      const response = await fetch('http://127.0.0.1:8000/users/upload_support_file', {
+      const response = await fetch('http://127.0.0.1:8000/utils/upload_support_file', {
         method: 'POST',
         body: formData,
       });
@@ -63,6 +63,26 @@ export default function HomePage() {
       else {
         alert(data.message);
       }
+    }
+
+    async function handleDownloadTemplate(e: React.SyntheticEvent) {
+
+      const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
+        method: 'POST',
+        body: JSON.stringify({ jwt_token: jwtToken }),
+      });
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'finance_template.csv');
+      document.body.appendChild(link);
+      link.click();
+
+      link.parentNode?.removeChild(link);
+      window.URL.revokeObjectURL(url);
     }
 
 
@@ -83,14 +103,16 @@ export default function HomePage() {
 
             <p>Username: {userData.username}</p>
 
-            <button onClick={() => {Cookies.remove('jwtToken'); router.push('/login');}}> Logout </button>
-
             <p>Upload new File:</p>
 
             <form onSubmit={handleFileUploadSubmit}>
                 <input  type = "file" onChange = {handleFileUplaod}></input>
                 <button type="submit">Submit File</button>
             </form>
+
+            <button onClick= {handleDownloadTemplate}>Download Template</button>
+
+            <button onClick={() => {Cookies.remove('jwtToken'); router.push('/login');}}> Logout </button>
 
         </div>
     );
