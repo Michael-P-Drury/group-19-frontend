@@ -70,18 +70,20 @@ export default function HomePage() {
       router.push("/login");
     }
     async function handleDownloadTemplate(e: React.SyntheticEvent) {
-
-      const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
-        method: 'POST',
-        body: JSON.stringify({ jwt_token: jwtToken }),
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/utils/download_template",
+        {
+          method: "POST",
+          body: JSON.stringify({ jwt_token: jwtToken }),
+        },
+      );
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
+
+      const link = document.createElement("a");
       link.href = url;
-      link.setAttribute('download', 'finance_template.csv');
+      link.setAttribute("download", "finance_template.csv");
       document.body.appendChild(link);
       link.click();
 
@@ -90,28 +92,27 @@ export default function HomePage() {
     }
 
     async function handleMakeReccomendation(e: React.SyntheticEvent) {
-
-      const response = await fetch('http://127.0.0.1:8000/utils/make_suggestion', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        "http://127.0.0.1:8000/utils/make_suggestion",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ jwt_token: jwtToken }),
         },
-        body: JSON.stringify({ jwt_token: jwtToken }),
-      });
+      );
 
       const data = await response.json();
 
-      location.reload()
+      location.reload();
 
       if (data.status == 200) {
         alert(data.reccomendation);
-      }
-      else {
+      } else {
         alert(data.message);
       }
-      
     }
-
 
     getUserData();
   }, [router]);
@@ -149,5 +150,5 @@ export default function HomePage() {
         </div>
     );
 
-  //return <Dashboard />;
+ // return <Dashboard />;
 }
