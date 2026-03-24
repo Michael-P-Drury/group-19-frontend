@@ -24,7 +24,8 @@ export default function HomePage() {
     const [clientRisk, setClientRisk] = useState(0);
 
     const [userQuery, setUserQuery] = useState('');
-    
+    const [lastQuery, setLastQuery] = useState('')
+    const [lastResponse, setLastResponse] = useState('')
 
     // Initialize with all expected keys
     const [userData, setUserData] = useState<UserData>({ 
@@ -169,6 +170,10 @@ export default function HomePage() {
       location.reload()
 
       if (data.status == 200) {
+        setLastQuery(userQuery);
+        setLastResponse(data.reccomendation);
+        sessionStorage.setItem('lastQuery', userQuery);
+        sessionStorage.setItem('lastResponse', data.reccomendation);
         alert(data.reccomendation);
       }
       else {
@@ -185,7 +190,16 @@ export default function HomePage() {
         }
 
         getUserData();
+
+        const savedQuery = sessionStorage.getItem(lastQuery) || ''
+        const savedResponse = sessionStorage.getItem(lastResponse) || ''
+
+        setLastQuery(savedQuery)
+        setLastResponse(savedResponse)
+
     }, [router]);
+
+    
 
     
     const handleLogout = () => {
@@ -260,8 +274,14 @@ export default function HomePage() {
         <input type="text" placeholder="Enter query..." onChange={(e) => setUserQuery(e.target.value)} />
         <button onClick={handleMakeReccomendation} >Make Reccomendation</button>
       </div>
+
+       <div className="general-page-section">
+        <p className="history-items">last query: {'Not set'}</p>
+        <p className="history-items">last response: {'Not set'}</p>
+        </div>
     </div>
     );
+
 
 }
 
