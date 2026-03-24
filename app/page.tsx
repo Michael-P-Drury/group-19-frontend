@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,25 +14,6 @@ interface UserData {
 }
 
 export default function HomePage() {
-  const router = useRouter();
-  const [userData, setUserData] = useState({ username: "" });
-  const jwtToken = Cookies.get("jwtToken");
-  const [file, setFile] = useState<File | null>(null);
-
-  const getUserData = async () => {
-    const response = await fetch("http://127.0.0.1:8000/users/get_user_info", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jwt_token: jwtToken }),
-    });
-
-    const data = await response.json();
-
-    if (data.status === 200) {
-      console.log(data.user_data.username);
-      setUserData({ username: data.user_data.username });
-    }
-  };
 
     const router = useRouter();
     const jwtToken = Cookies.get('jwtToken');
@@ -76,38 +57,39 @@ export default function HomePage() {
       }
     };
 
-    setFile(target.files[0]);
-  }
+    function handleFileUplaod(e: React.FormEvent<HTMLInputElement>) {
+      const target = e.target as HTMLInputElement & {
+        files: FileList;
+      }
 
-  async function handleFileUploadSubmit(e: React.SyntheticEvent) {
-    e.preventDefault();
+      setFile(target.files[0]);
+    }
 
-    if (!file || typeof file === "string") return;
+    async function handleFileUploadSubmit(e: React.SyntheticEvent) {
+      e.preventDefault();
 
-    const jwtToken = Cookies.get("jwtToken") || "";
+      if (!file || typeof file === 'string') return;
 
-    const formData = new FormData();
+      const jwtToken = Cookies.get('jwtToken') || "";
 
-    formData.append("jwt_token", jwtToken);
-    formData.append("file", file);
+      const formData = new FormData();
+      
+      formData.append('jwt_token', jwtToken);
+      formData.append('file', file);
 
-    const response = await fetch(
-      "http://127.0.0.1:8000/users/upload_support_file",
-      {
-        method: "POST",
+      const response = await fetch('http://127.0.0.1:8000/utils/upload_support_file', {
+        method: 'POST',
         body: formData,
-      },
-    );
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    location.reload();
+      location.reload()
 
       alert(data.message);
 
       getUserData(); 
     }
-  }
 
 
 
@@ -189,8 +171,14 @@ export default function HomePage() {
     }
 
 
-    getUserData();
-  }, [router]);
+    useEffect(() => {
+        
+        if (!jwtToken) {
+            router.push('/login');
+        }
+
+        getUserData();
+    }, [router]);
 
     
     const handleLogout = () => {
@@ -265,5 +253,5 @@ export default function HomePage() {
     </div>
     );
 
-  //return <Dashboard />;
 }
+
