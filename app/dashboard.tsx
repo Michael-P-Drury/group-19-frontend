@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import Output_Chart from "./components/createChart";
 import { ChartCard } from "./chartCard";
 
 export default function Dashboard() {

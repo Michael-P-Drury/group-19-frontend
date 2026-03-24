@@ -1,6 +1,5 @@
 import { useState } from "react";
 import Output_Chart from "./components/createChart";
-import PropTypes from "prop-types";
 
 export function ChartCard({
   id,
