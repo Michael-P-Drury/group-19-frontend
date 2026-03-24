@@ -1,11 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
-
-// Define an interface for your user data
 interface UserData {
   username: string;
   sector?: string;
@@ -14,196 +12,157 @@ interface UserData {
 }
 
 export default function HomePage() {
+  const router = useRouter();
+  const jwtToken = Cookies.get('jwtToken');
+  
+  const [file, setFile] = useState<File | null>(null);
+  const [sector, setSector] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [clientRisk, setClientRisk] = useState(0);
+  const [userData, setUserData] = useState<UserData>({
+    username: '',
+    sector: '',
+    monthsInBusiness: 0,
+    clientRisk: 0
+  });
 
-    const router = useRouter();
-    const jwtToken = Cookies.get('jwtToken');
-    const [file, setFile] = useState <File | null>(null);
-
-    const [sector, setSector] = useState('');
-    const [startDate, setStartDate] = useState('');
-    const [clientRisk, setClientRisk] = useState(0);
-
-    const [userQuery, setUserQuery] = useState('');
-    
-
-    // Initialize with all expected keys
-    const [userData, setUserData] = useState<UserData>({ 
-      username: '', 
-      sector: '', 
-      monthsInBusiness: 0, 
-      clientRisk: 0 
-    });
-    
-
-    const getUserData = async () => {
-      if (!jwtToken) return;
-
-      try {
-        const response = await fetch('http://127.0.0.1:8000/users/get_user_info', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ jwt_token: jwtToken }),
-        });
-
-        const data = await response.json();
-
-        if (data.status === 200) {
-          setUserData({
-            username:         data.user_data.username,
-            sector:           data.user_data.sector,
-            monthsInBusiness: data.user_data.months_in_business,
-            clientRisk:       data.user_data.client_risk
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch user data:", error);
-      }
-    };
-
-    function handleFileUplaod(e: React.FormEvent<HTMLInputElement>) {
-      const target = e.target as HTMLInputElement & {
-        files: FileList;
-      }
-
-      setFile(target.files[0]);
+  const getUserData = useCallback(async () => {
+    if (!jwtToken) {
+      router.push('/login');
+      return;
     }
 
-    async function handleFileUploadSubmit(e: React.SyntheticEvent) {
-      e.preventDefault();
-
-      if (!file || typeof file === 'string') return;
-
-      const jwtToken = Cookies.get('jwtToken') || "";
-
-      const formData = new FormData();
-      
-      formData.append('jwt_token', jwtToken);
-      formData.append('file', file);
-
-      const response = await fetch('http://127.0.0.1:8000/utils/upload_support_file', {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/users/get_user_info', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt_token: jwtToken }),
       });
 
       const data = await response.json();
 
-      location.reload()
-
-      alert(data.message);
-
-      getUserData(); 
-    }
-
-
-      async function handleInfoSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!jwtToken) return;
-        
-        console.log("handling info submit");
-
-        try {
-          const response = await fetch('http://127.0.0.1:8000/users/update_info', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jwt_token:           jwtToken,
-              sector:              sector,
-              business_start_date: startDate,
-              client_risk:         clientRisk,
-            }),
-          });
-            
-          console.log(response);
-
-          if (response.ok) {
-            alert("Information updated successfully!");
-            getUserData();
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Failed to update information.");
-          }
-        } catch (error) {
-          console.error("Update failed:", error);
-        }
+      if (data.status === 200) {
+        setUserData({
+          username: data.user_data.username,
+          sector: data.user_data.sector,
+          monthsInBusiness: data.user_data.months_in_business,
+          clientRisk: data.user_data.client_risk
+        });
       }
+    } catch (error) {
+      console.error("Failed to fetch user data:", error);
+    }
+  }, [jwtToken, router]);
+
+  useEffect(() => {
+    getUserData();
+  }, [getUserData]);
 
 
+  async function handleFileUploadSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!file || !jwtToken) return;
 
-    async function handleDownloadTemplate(e: React.SyntheticEvent) {
+    const formData = new FormData();
+    formData.append("jwt_token", jwtToken);
+    formData.append("file", file);
 
+    try {
+      const response = await fetch("http://127.0.0.1:8000/users/upload_support_file", {
+        method: "POST",
+        body: formData,
+      });
+      const data = await response.json();
+      alert(data.message);
+      getUserData();
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+  }
+
+  async function handleInfoSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!jwtToken) return;
+
+    try {
+      const response = await fetch('http://127.0.0.1:8000/users/update_info', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          jwt_token: jwtToken,
+          sector: sector,
+          business_start_date: startDate,
+          client_risk: clientRisk,
+        }),
+      });
+
+      if (response.ok) {
+        alert("Information updated successfully!");
+        getUserData();
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message || "Failed to update information.");
+      }
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  }
+
+  async function handleDownloadTemplate() {
+    try {
       const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ jwt_token: jwtToken }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
-      
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', 'finance_template.csv');
       document.body.appendChild(link);
       link.click();
-
-      link.parentNode?.removeChild(link);
+      link.remove();
       window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Download failed:", error);
     }
+  }
 
-
-
-    async function handleMakeReccomendation(e: React.SyntheticEvent) {
-
+  async function handleMakeReccomendation() {
+    try {
       const response = await fetch('http://127.0.0.1:8000/utils/make_suggestion', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ jwt_token: jwtToken, user_query: userQuery }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jwt_token: jwtToken }),
       });
 
       const data = await response.json();
-
-      location.reload()
-
-      if (data.status == 200) {
+      if (data.status === 200) {
         alert(data.reccomendation);
-      }
-      else {
+        getUserData();
+      } else {
         alert(data.message);
       }
-      
+    } catch (error) {
+      console.error("Recommendation fetch failed:", error);
     }
+  }
 
+  const handleLogout = () => {
+    Cookies.remove('jwtToken');
+    router.push('/login');
+  };
 
-    useEffect(() => {
-        
-        if (!jwtToken) {
-            router.push('/login');
-        }
-
-        getUserData();
-    }, [router]);
-
-    
-    const handleLogout = () => {
-      Cookies.remove('jwtToken');
-      router.push('/login');
-    };
-
-
-    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-      if (e.target.files && e.target.files[0]) {
-        setFile(e.target.files[0]);
-      }
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
     }
+  };
 
-
-    return (
-
-      <div className="centered-page-div">
+  return (
+    <div className="centered-page-div">
       <h1 className="page-header">Account Page</h1>
 
       <div className="general-page-section">
@@ -211,12 +170,11 @@ export default function HomePage() {
         <p className="account-items">Sector: {userData.sector || 'Not set'}</p>
         <p className="account-items">Months in Business: {userData.monthsInBusiness || 0}</p>
         <p className="account-items">Client Concentration Risk: {userData.clientRisk || 0}</p>
-
         <button onClick={handleLogout}>Logout</button>
       </div>
 
       <div className="general-page-selection">
-        <p>Update Information:</p>
+        <h3>Update Information</h3>
         <form onSubmit={handleInfoSubmit}>
           <input
             className="input-sector"
@@ -225,15 +183,12 @@ export default function HomePage() {
             value={sector}
             onChange={(e) => setSector(e.target.value)}
           />
-
           <input
             className="input-business-start-date"
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
           />
-          
-
           <input
             className="input-client-risk"
             type="range"
@@ -254,14 +209,10 @@ export default function HomePage() {
         </form>
       </div>
 
-      <button onClick= {handleDownloadTemplate}>Download Template</button>
-
-      <div>
-        <input type="text" placeholder="Enter query..." onChange={(e) => setUserQuery(e.target.value)} />
-        <button onClick={handleMakeReccomendation} >Make Reccomendation</button>
+      <div style={{ marginTop: '20px', display: 'flex', gap: '10px' }}>
+        <button onClick={handleDownloadTemplate}>Download Template</button>
+        <button onClick={handleMakeReccomendation}>Make Recommendation</button>
       </div>
     </div>
-    );
-
+  );
 }
-
