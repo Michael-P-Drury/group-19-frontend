@@ -132,6 +132,9 @@ export default function HomePage() {
       const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
         method: 'POST',
         body: JSON.stringify({ jwt_token: jwtToken }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       const blob = await response.blob();
@@ -146,6 +149,8 @@ export default function HomePage() {
       link.parentNode?.removeChild(link);
       window.URL.revokeObjectURL(url);
     }
+
+
 
     async function handleMakeReccomendation(e: React.SyntheticEvent) {
 
