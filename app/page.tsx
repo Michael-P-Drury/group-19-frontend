@@ -95,32 +95,35 @@ export default function HomePage() {
     }
 
 
-    async function handleInfoSubmit(e: React.FormEvent) {
-      e.preventDefault();
-      if (!jwtToken) return;
-      
-      console.log("handling info submit");
+      async function handleInfoSubmit(e: React.FormEvent) {
+        e.preventDefault();
+        if (!jwtToken) return;
+        
+        console.log("handling info submit");
 
-      try {
-        const response = await fetch('http://127.0.0.1:8000/users/update_info', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            jwt_token:           jwtToken,
-            sector:              sector,
-            business_start_date: startDate,
-            client_risk:         clientRisk,
-          }),
-        });
-          
-        console.log(response);
+        try {
+          const response = await fetch('http://127.0.0.1:8000/users/update_info', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              jwt_token:           jwtToken,
+              sector:              sector,
+              business_start_date: startDate,
+              client_risk:         clientRisk,
+            }),
+          });
+            
+          console.log(response);
 
-        if (response.ok) {
-          alert("Information updated successfully!");
-          getUserData();
-        } else {
-          const errorData = await response.json();
-          alert(errorData.message || "Failed to update information.");
+          if (response.ok) {
+            alert("Information updated successfully!");
+            getUserData();
+          } else {
+            const errorData = await response.json();
+            alert(errorData.message || "Failed to update information.");
+          }
+        } catch (error) {
+          console.error("Update failed:", error);
         }
       } catch (error) {
         console.error("Update failed:", error);
@@ -308,19 +311,13 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="m-4">
+                  <input type="text" placeholder="Enter query..." onChange={(e) => setUserQuery(e.target.value)} />
                   <button className="btn btn-secondary w-100 fw-bold" onClick= {handleMakeReccomendation}>Make Forecast</button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-
-      <div>
-        <input type="text" placeholder="Enter query..." onChange={(e) => setUserQuery(e.target.value)} />
-        <button onClick={handleMakeReccomendation} >Make Reccomendation</button>
-      </div>
-    </div>
     );
 }
 
