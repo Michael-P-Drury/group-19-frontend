@@ -1,1 +1,19 @@
 @import 'bootstrap';
+
+.navbar a {
+  text-decoration: none;
+}
+
+ /* styling for dropdown menu so no JS is required */
+.dropdown-css {
+  position: relative;
+}
+
+.dropdown-css .dropdown-menu {
+    right: 0;
+  left: auto;
+}
+
+.dropdown-css:hover .dropdown-menu {
+  display: block !important;
+}
