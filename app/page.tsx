@@ -276,8 +276,8 @@ export default function HomePage() {
       </div>
 
        <div className="general-page-section">
-        <p className="history-items">last query: {'Not set'}</p>
-        <p className="history-items">last response: {'Not set'}</p>
+        <p className="history-items">last query: {lastQuery || ''}</p>
+        <p className="history-items">last response: {lastResponse || ''}</p>
         </div>
     </div>
     );
