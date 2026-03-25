@@ -30,7 +30,7 @@ export default function LoginPage() {
     if (data.status == 200) {
       Cookies.set("jwtToken", data.jwt_token);
 
-      router.push("/");
+      router.push("/account");
     }
 
     alert(data.status_message);
