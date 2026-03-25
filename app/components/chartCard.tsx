@@ -28,7 +28,7 @@ export function ChartCard({
     <div className="card shadow-sm">
       <div className="card-header d-flex justify-content-between align-items-center bg-white">
         <h5 className="mb-0 text-primary">{title}</h5>
-        // Buttons to change card
+        {/* Big Jack make this look pretty please */}
         <button
           className={`btn btn-sm ${chartType === "line" ? "btn-primary" : "btn-outline-primary"}`}
           onClick={() => setChartType("line")}
