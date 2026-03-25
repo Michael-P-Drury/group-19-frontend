@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
+import Dashboard from "./dashboard/page";
 
 // Define an interface for your user data
 interface UserData {
@@ -195,75 +196,75 @@ export default function HomePage() {
     }
   }
 
-  return (
-    <div className="centered-page-div">
-      <h1 className="page-header">Account Page</h1>
+  // return (
+  //   <div className="centered-page-div">
+  //     <h1 className="page-header">Account Page</h1>
 
-      <div className="general-page-section">
-        <p className="account-items">Username: {userData.username}</p>
-        <p className="account-items">Sector: {userData.sector || "Not set"}</p>
-        <p className="account-items">
-          Months in Business: {userData.monthsInBusiness || 0}
-        </p>
-        <p className="account-items">
-          Client Concentration Risk: {userData.clientRisk || 0}
-        </p>
+  //     <div className="general-page-section">
+  //       <p className="account-items">Username: {userData.username}</p>
+  //       <p className="account-items">Sector: {userData.sector || "Not set"}</p>
+  //       <p className="account-items">
+  //         Months in Business: {userData.monthsInBusiness || 0}
+  //       </p>
+  //       <p className="account-items">
+  //         Client Concentration Risk: {userData.clientRisk || 0}
+  //       </p>
 
-        <button onClick={handleLogout}>Logout</button>
-      </div>
+  //       <button onClick={handleLogout}>Logout</button>
+  //     </div>
 
-      <div className="general-page-selection">
-        <p>Update Information:</p>
-        <form onSubmit={handleInfoSubmit}>
-          <input
-            className="input-sector"
-            type="text"
-            placeholder="Enter business sector"
-            value={sector}
-            onChange={(e) => setSector(e.target.value)}
-          />
+  //     <div className="general-page-selection">
+  //       <p>Update Information:</p>
+  //       <form onSubmit={handleInfoSubmit}>
+  //         <input
+  //           className="input-sector"
+  //           type="text"
+  //           placeholder="Enter business sector"
+  //           value={sector}
+  //           onChange={(e) => setSector(e.target.value)}
+  //         />
 
-          <input
-            className="input-business-start-date"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+  //         <input
+  //           className="input-business-start-date"
+  //           type="date"
+  //           value={startDate}
+  //           onChange={(e) => setStartDate(e.target.value)}
+  //         />
 
-          <input
-            className="input-client-risk"
-            type="range"
-            min="0"
-            max="10"
-            value={clientRisk}
-            onChange={(e) => setClientRisk(Number(e.target.value))}
-          />
-          <p>Client Risk Level: {clientRisk}</p>
-          <button type="submit">Submit Info</button>
-        </form>
+  //         <input
+  //           className="input-client-risk"
+  //           type="range"
+  //           min="0"
+  //           max="10"
+  //           value={clientRisk}
+  //           onChange={(e) => setClientRisk(Number(e.target.value))}
+  //         />
+  //         <p>Client Risk Level: {clientRisk}</p>
+  //         <button type="submit">Submit Info</button>
+  //       </form>
 
-        <hr />
-        <p>Upload Support File:</p>
-        <form onSubmit={handleFileUploadSubmit}>
-          <input type="file" onChange={handleFileChange} />
-          <button type="submit" disabled={!file}>
-            Submit File
-          </button>
-        </form>
-      </div>
+  //       <hr />
+  //       <p>Upload Support File:</p>
+  //       <form onSubmit={handleFileUploadSubmit}>
+  //         <input type="file" onChange={handleFileChange} />
+  //         <button type="submit" disabled={!file}>
+  //           Submit File
+  //         </button>
+  //       </form>
+  //     </div>
 
-      <button onClick={handleDownloadTemplate}>Download Template</button>
+  //     <button onClick={handleDownloadTemplate}>Download Template</button>
 
-      <div>
-        <input
-          type="text"
-          placeholder="Enter query..."
-          onChange={(e) => setUserQuery(e.target.value)}
-        />
-        <button onClick={handleMakeReccomendation}>Make Reccomendation</button>
-      </div>
-    </div>
-  );
+  //     <div>
+  //       <input
+  //         type="text"
+  //         placeholder="Enter query..."
+  //         onChange={(e) => setUserQuery(e.target.value)}
+  //       />
+  //       <button onClick={handleMakeReccomendation}>Make Reccomendation</button>
+  //     </div>
+  //   </div>
+  // );
 
-  // return <Dashboard />;
+  return <Dashboard />;
 }
