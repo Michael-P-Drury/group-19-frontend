@@ -23,6 +23,9 @@ export default function HomePage() {
     const [startDate, setStartDate] = useState('');
     const [clientRisk, setClientRisk] = useState(0);
 
+    const [userQuery, setUserQuery] = useState('');
+    
+
     // Initialize with all expected keys
     const [userData, setUserData] = useState<UserData>({ 
       username: '', 
@@ -92,7 +95,6 @@ export default function HomePage() {
     }
 
 
-
     async function handleInfoSubmit(e: React.FormEvent) {
       e.preventDefault();
       if (!jwtToken) return;
@@ -132,6 +134,9 @@ export default function HomePage() {
       const response = await fetch('http://127.0.0.1:8000/utils/download_template', {
         method: 'POST',
         body: JSON.stringify({ jwt_token: jwtToken }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
 
       const blob = await response.blob();
@@ -147,6 +152,8 @@ export default function HomePage() {
       window.URL.revokeObjectURL(url);
     }
 
+
+
     async function handleMakeReccomendation(e: React.SyntheticEvent) {
 
       const response = await fetch('http://127.0.0.1:8000/utils/make_suggestion', {
@@ -154,7 +161,7 @@ export default function HomePage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ jwt_token: jwtToken }),
+        body: JSON.stringify({ jwt_token: jwtToken, user_query: userQuery }),
       });
 
       const data = await response.json();
@@ -309,6 +316,11 @@ export default function HomePage() {
       </div>
       
 
+      <div>
+        <input type="text" placeholder="Enter query..." onChange={(e) => setUserQuery(e.target.value)} />
+        <button onClick={handleMakeReccomendation} >Make Reccomendation</button>
+      </div>
+    </div>
     );
 }
 
