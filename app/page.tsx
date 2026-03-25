@@ -95,35 +95,32 @@ export default function HomePage() {
     }
 
 
-      async function handleInfoSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!jwtToken) return;
-        
-        console.log("handling info submit");
+    async function handleInfoSubmit(e: React.FormEvent) {
+      e.preventDefault();
+      if (!jwtToken) return;
+      
+      console.log("handling info submit");
 
-        try {
-          const response = await fetch('http://127.0.0.1:8000/users/update_info', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jwt_token:           jwtToken,
-              sector:              sector,
-              business_start_date: startDate,
-              client_risk:         clientRisk,
-            }),
-          });
-            
-          console.log(response);
+      try {
+        const response = await fetch('http://127.0.0.1:8000/users/update_info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jwt_token:           jwtToken,
+            sector:              sector,
+            business_start_date: startDate,
+            client_risk:         clientRisk,
+          }),
+        });
+          
+        console.log(response);
 
-          if (response.ok) {
-            alert("Information updated successfully!");
-            getUserData();
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Failed to update information.");
-          }
-        } catch (error) {
-          console.error("Update failed:", error);
+        if (response.ok) {
+          alert("Information updated successfully!");
+          getUserData();
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message || "Failed to update information.");
         }
       } catch (error) {
         console.error("Update failed:", error);
@@ -316,8 +313,8 @@ export default function HomePage() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        </div>    
+    </div>
     );
 }
 
