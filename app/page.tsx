@@ -93,37 +93,37 @@ export default function HomePage() {
 
 
 
-      async function handleInfoSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!jwtToken) return;
-        
-        console.log("handling info submit");
+    async function handleInfoSubmit(e: React.FormEvent) {
+      e.preventDefault();
+      if (!jwtToken) return;
+      
+      console.log("handling info submit");
 
-        try {
-          const response = await fetch('http://127.0.0.1:8000/users/update_info', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              jwt_token:           jwtToken,
-              sector:              sector,
-              business_start_date: startDate,
-              client_risk:         clientRisk,
-            }),
-          });
-            
-          console.log(response);
+      try {
+        const response = await fetch('http://127.0.0.1:8000/users/update_info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jwt_token:           jwtToken,
+            sector:              sector,
+            business_start_date: startDate,
+            client_risk:         clientRisk,
+          }),
+        });
+          
+        console.log(response);
 
-          if (response.ok) {
-            alert("Information updated successfully!");
-            getUserData();
-          } else {
-            const errorData = await response.json();
-            alert(errorData.message || "Failed to update information.");
-          }
-        } catch (error) {
-          console.error("Update failed:", error);
+        if (response.ok) {
+          alert("Information updated successfully!");
+          getUserData();
+        } else {
+          const errorData = await response.json();
+          alert(errorData.message || "Failed to update information.");
         }
+      } catch (error) {
+        console.error("Update failed:", error);
       }
+    }
 
 
 
@@ -195,63 +195,120 @@ export default function HomePage() {
 
 
     return (
-
+   
+      
       <div className="centered-page-div">
-      <h1 className="page-header">Account Page</h1>
+        {/* nav bar */}
+        <nav className="navbar sticky-top bg-body-tertiary">
+          <div className="container-fluid">
+            <div className="d-flex align-items-center gap-4">
+              <h1 className="page-header ps-3">Budget For You</h1>
+              <ul className="nav navbar-nav flex-row gap-3">
+                <li><a className="nav-link" href="#">Home</a></li>
+                <li><a className="nav-link" href="#">Dashboard</a></li>
+              </ul>
+            </div>
+            <div className="dropdown-css">
+              <button className="btn btn-primary" type="button">Account</button>
+              <ul className="dropdown-menu">
+                <li><a className="dropdown-item active" href="#">Update or View Your Information</a></li>
+                <li><a className="dropdown-item" onClick={handleLogout}>Logout</a></li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+        <br></br>
 
-      <div className="general-page-section">
-        <p className="account-items">Username: {userData.username}</p>
-        <p className="account-items">Sector: {userData.sector || 'Not set'}</p>
-        <p className="account-items">Months in Business: {userData.monthsInBusiness || 0}</p>
-        <p className="account-items">Client Concentration Risk: {userData.clientRisk || 0}</p>
+        
+        
+        <div className="container py-4">
+          {/* left side */}
+          <div className="row p-3">
+            <div className="col-lg-6">
+              <div className="card border-1 shadow-sm p-4 m-4">
+                <h5 className="fw-bold mb-3 border-bottom pb-2">Business Profile</h5>
+                <div className="mb-2">
+                  <label className="d-block">Username:</label>
+                  <span className="fw-bold">{userData.username}</span>
+                </div>
+                <div className="mb-2">
+                  <label className="d-block">Sector:</label>
+                  <span className="fw-bold">{userData.sector || 'Not set'}</span>
+                </div>
+                <div className="row">
+                  <div className="col-md-6">
+                    <label className="d-block">Months in Business:</label>
+                    <span className="fw-bold">{userData.monthsInBusiness || 0}</span>
+                  </div>
+                  <div className="col-md-6">
+                    <label className="d-block">Client Concentration Risk:</label>
+                    <span className="fw-bold">{userData.clientRisk || 0}/10</span>
+                  </div>
+                </div>
+              </div>
 
-        <button onClick={handleLogout}>Logout</button>
-      </div>
-
-      <div className="general-page-selection">
-        <p>Update Information:</p>
-        <form onSubmit={handleInfoSubmit}>
-          <input
-            className="input-sector"
-            type="text"
-            placeholder="Enter business sector"
-            value={sector}
-            onChange={(e) => setSector(e.target.value)}
-          />
-
-          <input
-            className="input-business-start-date"
-            type="date"
-            value={startDate}
-            onChange={(e) => setStartDate(e.target.value)}
-          />
+              <div className="card border-1 shadow-sm p-4 m-4">
+                <h5 className="fw-bold mb-3 border-bottom pb-2">Update Information</h5>
+                <form onSubmit={handleInfoSubmit}>
+                  <div className="mb-3">
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="Enter business sector"
+                      value={sector}
+                      onChange={(e) => setSector(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <input
+                      className="form-control"
+                      type="date"
+                      value={startDate}
+                      onChange={(e) => setStartDate(e.target.value)}
+                    />
+                  </div>
+                  <div className="mb-3">
+                    <label className="">Client Risk Level: {clientRisk}</label>
+                    <input
+                      className="form-range"
+                      type="range"
+                      min="0"
+                      max="10"
+                      value={clientRisk}
+                      onChange={(e) => setClientRisk(Number(e.target.value))}
+                    />
+                  </div>
+                  <button className="btn btn-primary w-100 fw-bold" type="submit">Submit Info</button>
+                </form>
+              </div>
+            </div>
           
-
-          <input
-            className="input-client-risk"
-            type="range"
-            min="0"
-            max="10"
-            value={clientRisk}
-            onChange={(e) => setClientRisk(Number(e.target.value))}
-          />
-          <p>Client Risk Level: {clientRisk}</p>
-          <button type="submit">Submit Info</button>
-        </form>
-
-        <hr />
-        <p>Upload Support File:</p>
-        <form onSubmit={handleFileUploadSubmit}>
-          <input type="file" onChange={handleFileChange} />
-          <button type="submit" disabled={!file}>Submit File</button>
-        </form>
+      
+          
+          {/* right side */}
+            <div className="col-lg-6">
+              <div className="card border-1 shadow-sm p-4 m-4">
+                <h5 className="fw-bold mb-3 border-bottom pb-2">Upload Support Files</h5>
+                <div className="mb-3">
+                  <button className="btn btn-primary w-100 fw-bold" onClick= {handleDownloadTemplate}>Download Template</button>
+                </div>
+                <div className="mb-3">
+                  <form onSubmit={handleFileUploadSubmit}>
+                    <input className="form-control" type="file" onChange={handleFileChange} />
+                    <br></br>
+                    <button className="btn btn-secondary w-100" type="submit" disabled={!file}>Submit File</button>
+                  </form>
+                </div>
+              </div>
+              <div className="m-4">
+                  <button className="btn btn-secondary w-100 fw-bold" onClick= {handleMakeReccomendation}>Make Forecast</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+      
 
-      <button onClick= {handleDownloadTemplate}>Download Template</button>
-
-      <button onClick= {handleMakeReccomendation}>Make Reccomendation</button>
-    </div>
     );
-
 }
 
