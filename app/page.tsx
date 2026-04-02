@@ -14,33 +14,35 @@ interface UserData {
 }
 
 export default function HomePage() {
-  const router = useRouter();
-  const jwtToken = Cookies.get("jwtToken");
-  const [file, setFile] = useState<File | null>(null);
 
-  const [sector, setSector] = useState("");
-  const [startDate, setStartDate] = useState("");
-  const [clientRisk, setClientRisk] = useState(0);
+    const router = useRouter();
+    const jwtToken = Cookies.get('jwtToken');
+    const [file, setFile] = useState <File | null>(null);
 
-  const [userQuery, setUserQuery] = useState("");
+    const [sector, setSector] = useState('');
+    const [startDate, setStartDate] = useState('');
+    const [clientRisk, setClientRisk] = useState(0);
 
-  // Initialize with all expected keys
-  const [userData, setUserData] = useState<UserData>({
-    username: "",
-    sector: "",
-    monthsInBusiness: 0,
-    clientRisk: 0,
-  });
+    const [userQuery, setUserQuery] = useState('');
+    const [lastQuery, setLastQuery] = useState('')
+    const [lastResponse, setLastResponse] = useState('')
 
-  const getUserData = async () => {
-    if (!jwtToken) return;
+    // Initialize with all expected keys
+    const [userData, setUserData] = useState<UserData>({ 
+      username: '', 
+      sector: '', 
+      monthsInBusiness: 0, 
+      clientRisk: 0 
+    });
+    
 
-    try {
-      const response = await fetch(
-        "http://127.0.0.1:8000/users/get_user_info",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+    const getUserData = async () => {
+      if (!jwtToken) return;
+
+      try {
+        const response = await fetch('http://127.0.0.1:8000/users/get_user_info', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ jwt_token: jwtToken }),
         },
       );
@@ -170,16 +172,50 @@ export default function HomePage() {
 
     location.reload();
 
-    if (data.status == 200) {
-      alert(data.reccomendation);
-    } else {
-      alert(data.message);
+      if (data.status == 200) {
+        setLastQuery(userQuery);
+        setLastResponse(data.reccomendation);
+        sessionStorage.setItem('lastQuery', userQuery);
+        sessionStorage.setItem('lastResponse', data.reccomendation);
+        alert(data.reccomendation);
+      }
+      else {
+        alert(data.message);
+      }
+      
     }
   }
 
-  useEffect(() => {
-    if (!jwtToken) {
-      router.push("/login");
+
+    useEffect(() => {
+        
+        if (!jwtToken) {
+            router.push('/login');
+        }
+
+        getUserData();
+
+        const savedQuery = sessionStorage.getItem(lastQuery) || ''
+        const savedResponse = sessionStorage.getItem(lastResponse) || ''
+
+        setLastQuery(savedQuery)
+        setLastResponse(savedResponse)
+
+    }, [router]);
+
+    
+
+    
+    const handleLogout = () => {
+      Cookies.remove('jwtToken');
+      router.push('/login');
+    };
+
+
+    function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+      if (e.target.files && e.target.files[0]) {
+        setFile(e.target.files[0]);
+      }
     }
 
     getUserData();
@@ -355,6 +391,13 @@ export default function HomePage() {
           </div>
         </div>
       </div>
+
+       <div className="general-page-section">
+        <p className="history-items">last query: {lastQuery || ''}</p>
+        <p className="history-items">last response: {lastResponse || ''}</p>
+        </div>
     </div>
-  );
+    );
+
+
 }
